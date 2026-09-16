@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10131a">
+<title>GameForge Studio</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#0b0e14;color:#eef2f7}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0}
+.app{height:100vh;display:flex;flex-direction:column}
+.top{height:58px;display:flex;align-items:center;gap:8px;padding:8px 12px;background:#11151e;border-bottom:1px solid #252b38}
+.brand{font-weight:800;margin-left:auto}
+.pill{padding:7px 10px;background:#1b2230;border:1px solid #2b3445;border-radius:9px;font-size:12px}
+.btn{background:#1d2634;color:#fff;border:1px solid #303b4d;border-radius:9px;padding:8px 11px}
+.btn:hover{background:#253144}
+.primary{background:#3b82f6;border-color:#3b82f6}
+.danger{background:#7f2630}
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:235px minmax(300px,1fr) 285px;direction:ltr}
+.panel{background:#10141c;border-left:1px solid #252b38;overflow:auto;direction:rtl}
+.left{border-left:0;border-right:1px solid #252b38}
+.stage-wrap{display:flex;flex-direction:column;min-width:0;direction:rtl}
+.toolbar{padding:8px;background:#0f131a;border-bottom:1px solid #252b38;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.stage-area{flex:1;overflow:auto;display:flex;justify-content:center;align-items:center;padding:24px;background:radial-gradient(circle at 50% 20%,#18202d 0,#0b0e14 55%)}
+.stage{position:relative;background:#fff;color:#111;box-shadow:0 15px 50px #0008;overflow:hidden;touch-action:none}
+.grid{background-image:linear-gradient(#cbd5e122 1px,transparent 1px),linear-gradient(90deg,#cbd5e122 1px,transparent 1px);background-size:20px 20px}
+.el{position:absolute;user-select:none;cursor:pointer;overflow:hidden;white-space:pre-wrap;word-break:break-word}
+.el.selected{outline:2px solid #3b82f6;outline-offset:2px}
+.g-btn{display:flex;align-items:center;justify-content:center;border-radius:10px;border:2px solid #263247;background:#e8edf5;color:#111}
+.g-text{display:flex;align-items:center}
+.g-box{border:2px solid #465164;background:#e8edf5;border-radius:8px}
+.g-badge{display:flex;align-items:center;justify-content:center;border-radius:999px;background:#3b82f6;color:#fff;font-weight:bold}
+.section{padding:12px;border-bottom:1px solid #222936}
+.section h3{margin:0 0 10px;font-size:13px}
+.toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.field{margin:8px 0}
+.field label{display:block;font-size:11px;color:#9da8b8;margin-bottom:5px}
+.field input,.field textarea,.field select{width:100%;background:#0c1017;color:#fff;border:1px solid #30394a;border-radius:8px;padding:8px;outline:none}
+.field textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:6px}
+.row>*{flex:1}
+.muted{font-size:11px;color:#8994a5;line-height:1.6}
+.list{display:flex;flex-direction:column;gap:6px}
+.scene-item,.elem-item{display:flex;align-items:center;gap:6px;padding:8px;background:#171d28;border:1px solid #283142;border-radius:8px}
+.scene-item.active,.elem-item.active{border-color:#3b82f6;background:#17263d}
+.scene-item span,.elem-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.spacer{flex:1}
+.modal-back{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}
+.modal-back.show{display:flex}
+.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:#111722;border:1px solid #30394a;border-radius:15px;padding:18px;box-shadow:0 30px 80px #000c}
+.modal h2{margin:0 0 14px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-start;margin-top:14px}
+.icon-preview{width:60px;height:60px;border-radius:14px;background:#1d2634;display:flex;align-items:center;justify-content:center;font-size:30px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#182130;border:1px solid #334057;padding:9px 14px;border-radius:10px;display:none;z-index:50}
+.toast.show{display:block}
+.empty{padding:20px;text-align:center;color:#8290a4;font-size:12px}
+.small{font-size:10px}
+.action-extra{padding:8px;background:#0c1119;border:1px solid #273143;border-radius:8px;margin-top:7px}
+.preview-stage{width:min(90vw,420px);height:min(82vh,760px);position:relative;background:#fff;overflow:hidden;color:#111;border-radius:10px}
+.preview-modal .modal{width:min(620px,100%)}
+.hidden{display:none!important}
+@media(max-width:900px){
+.layout{grid-template-columns:190px minmax(260px,1fr) 235px}
+.top .pill{display:none}
+}
+@media(max-width:700px){
+.app{height:auto;min-height:100vh}
+.top{height:auto;min-height:58px;flex-wrap:wrap}
+.layout{display:flex;flex-direction:column}
+.left,.panel{max-height:none}
+.left{order:2} .stage-wrap{order:1;height:60vh;min-height:420px}
+.panel.right{order:3}
+.toolgrid{grid-template-columns:repeat(4,1fr)}
+.section{padding:10px}
+.left .section:nth-child(2) .toolgrid{grid-template-columns:1fr 1fr}
+.stage-area{padding:10px}
+.stage{transform-origin:center center}
+}
+.stage-canvas{touch-action:none;user-select:none}
+.stage-element{touch-action:none;cursor:grab}
+.stage-element.dragging{cursor:grabbing}
+.custom-size-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.custom-size-controls input{width:90px}
+.custom-size-controls button{padding:7px 10px}
+.score-hud{position:absolute;z-index:9999;top:12px;right:12px;padding:9px 15px;border-radius:12px;background:rgba(0,0,0,.78);color:#fff;font-weight:800;font-size:18px;direction:rtl;pointer-events:none;display:n
+one}
+.score-action-box{margin-top:10px;padding:10px;border:1px solid rgba(255,255,255,.12);border-radius:10px}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+<div class="brand"> </aside>
+</div>
+</div>
+<div id="modalBack" class="modal-back"><div id="modal" class="modal"></div></div>
+<div id="toast" class="toast"></div>
+<script>
+'use strict';
+const KEY='gameforge_studio_v5';
+let state={project:null,sceneId:null,selectedId:null,grid:true};
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+function uid(p='id'){return p+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function defProject(){let sid=uid('scene');return{name:'یزاب نم',author:'',description:'',icon:' با>/button>`;box.appendChild(d)}}
+function sceneSettings(id){let s=state.project.scenes.find(x=>x.id===id);if(!s)return;openModal(`<h2>تامیظنت $}esc(s.name)}</h2><div class="field"><label>مان هنحص>/label><input id="sName" value="${esc(s.name)}"
+></div><div class="field"><label>سپ (function(){function projectNow(){return(typeof state!=="undefined"&&state.project)?state.project:null}function currentElement(){const p=projectNow();if(!p)return null;const sc=(p.scenes||[]).find(x=>x.id===p.c
+urrentScene)||(p.scenes||[])[0];return sc?(sc.elements||[]).find(x=>x.id===state.selectedId):null}function scoreEl(){return document.getElementById('scoreHud')}window.updateScoreDisplay=function(){const p=proje
+ctNow();const h=scoreEl();if(!p||!h)return;h.style.display=p.showScore?'block':'none';const v=document.getElementById('scoreHudValue');if(v)v.textContent=String(Number(state.score)||0)};window.applyScoreAction=
+function(el){if(!el)return;const a=el.action||el.clickAction||'none';const amount=Number(el.scoreAmount??el.amount??1);if(a==='score+'||a==='increaseScore'||a==='increase'){state.score=(Number(state.score)||0)+
+amount}else if(a==='score-'||a==='decreaseScore'||a==='decrease'){state.score=(Number(state.score)||0)-amount}else if(a==='setScore'){state.score=amount}if((el.scoreMessageEnabled||el.showScoreMessage)&&el.scor
+eMessage){alert(el.scoreMessage)}window.updateScoreDisplay()};document.addEventListener('click',function(ev){const e=ev.target.closest('.stage-element');if(!e||typeof state==='undefined')return;const id=e.datas
+et.id;const p=projectNow();const sc=(p.scenes||[]).find(x=>x.id===p.currentScene)||(p.scenes||[])[0];const model=sc&&(sc.elements||[]).find(x=>x.id===id);if(model&&(model.action||model.clickAction)){window.appl
+yScoreAction(model)}},true);document.addEventListener('input',function(ev){if(ev.target.id==='scoreAmount'){const el=currentElement();if(el)el.scoreAmount=Number(ev.target.value)||0}if(ev.target.id==='scoreMess
+age'){const el=currentElement();if(el)el.scoreMessage=ev.target.value}});document.addEventListener('change',function(ev){if(ev.target.id==='showScoreSetting'){const p=projectNow();if(p){p.showScore=!!ev.target.
+checked;window.updateScoreDisplay()}}if(ev.target.id==='scoreMessageEnabled'){const el=currentElement();if(el)el.scoreMessageEnabled=!!ev.target.checked}});setTimeout(window.updateScoreDisplay,100)})();
+</script>
+</body>
+</html>
